@@ -41,18 +41,7 @@ entregable es `informe_guia2.pdf`.
 
 ## Como ejecutarlo
 
-En Windows, el camino corto es el lanzador `ejecutar.bat`, que corre cada
-parte por separado y se detiene para que la salida se pueda leer:
-
-```powershell
-.\ejecutar.bat        # menu interactivo
-.\ejecutar.bat 3      # corre directo la opcion 3 y termina
-```
-
-El menu verifica el entorno, respalda las evidencias, corre los experimentos
-A, B, C y D por separado, compila el informe y abre los resultados.
-
-A mano, sin el lanzador, primero las dependencias:
+Primero las dependencias:
 
 ```powershell
 pip install -r requirements.txt
@@ -79,10 +68,35 @@ falta nada.
 **Correr el experimento D sobrescribe la evidencia del clúster real.** Tanto
 `coordinator.py simulacion` como `coordinator.py bateria` reescriben
 `experimento-d/evidencias/resultados_d.csv` y `comparacion_d.png`, que son la
-medicion sobre las VMs y una de las figuras del informe. La opcion 6 de
-`ejecutar.bat` respalda ambos antes de correr, deja la salida de la
-simulacion en `evidencias_simulacion/` y restaura los originales al terminar.
-Si se corre el coordinador a mano, hay que respaldarlos primero.
+medicion sobre las VMs y una de las figuras del informe. Si se corre el
+coordinador a mano, hay que respaldar esos dos archivos primero. La escena 6
+de `presentar.bat` ya lo hace sola.
+
+## Presentacion
+
+`presentar.bat` es el guion para grabar el video: siete escenas en orden, cada
+una con su introduccion, lo que haya que ejecutar y la conclusion calculada
+desde las evidencias del momento (no con numeros escritos a mano, asi que
+nunca contradice lo que se acaba de ver en pantalla).
+
+```powershell
+.\presentar.bat        # menu de escenas
+.\presentar.bat g      # guiado: las 7 en orden, con pausa entre cada una
+.\presentar.bat 4      # solo la escena 4, para regrabarla
+.\presentar.bat p      # comprobacion previa, ANTES de empezar a grabar
+```
+
+Las escenas son: portada y tesis, experimento A, experimento B, experimento C,
+experimento D sobre las evidencias del clúster, experimento D con el protocolo
+corriendo en vivo, y cierre. Entre escena y escena se detiene para poder cortar
+la grabacion.
+
+El resumen de cada escena lo produce `presentacion/resumen_escena.py`, que
+tambien se puede llamar suelto:
+
+```powershell
+python presentacion/resumen_escena.py a       # a, b, c, d o cierre
+```
 
 ## Reproducir el clúster del experimento D desde cero
 
@@ -115,8 +129,7 @@ pdflatex -interaction=nonstopmode informe_guia2.tex   # dos veces, por el indice
 
 Requiere una distribucion LaTeX (MiKTeX o TeX Live) con `inputenc`, `babel`,
 `graphicx`, `hyperref` y `amsmath`. Verificado con MiKTeX 25.12: compila sin
-errores y genera las 12 paginas con sus 5 figuras. Tambien esta como opcion 8
-de `ejecutar.bat`.
+errores y genera las 12 paginas con sus 5 figuras.
 
 ## Declaracion de uso de IA
 

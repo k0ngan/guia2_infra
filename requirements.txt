@@ -1,0 +1,5 @@
+numpy
+pandas
+matplotlib
+dask[dataframe]
+psutil  # opcional: solo se usa para medir uso de CPU en el experimento B; si no esta instalado el script avisa y continua sin esa metrica

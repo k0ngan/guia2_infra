@@ -1,0 +1,20 @@
+Evidencia 3 - Los dos workers disponibles y respondiendo
+Fecha: 2026-11-08 00:20:53 HSP
+
+-- 3.1 El servicio corriendo dentro de cada worker (ps + log del proceso)
+$ ssh -p 2221 alumno@127.0.0.1 'ps | grep worker.py; cat worker.log; netstat -ltn | grep 9000'
+ 2217 python3 /home/alumno/worker.py 9000 nodo1
+tcp        0      0 0.0.0.0:9000            0.0.0.0:*               LISTEN      
+
+$ ssh -p 2222 alumno@127.0.0.1 'ps | grep worker.py; cat worker.log; netstat -ltn | grep 9000'
+ 2202 python3 /home/alumno/worker.py 9000 nodo2
+tcp        0      0 0.0.0.0:9000            0.0.0.0:*               LISTEN      
+
+-- 3.2 Puertos reenviados por QEMU, vistos desde el anfitrion Windows
+TCP 127.0.0.1:9001 -> conectado: True
+TCP 127.0.0.1:9002 -> conectado: True
+
+-- 3.3 Los mismos puertos vistos desde nodo0, a traves de la puerta NAT de QEMU (10.0.2.2)
+$ ssh -p 2220 alumno@127.0.0.1 python3 -c '<prueba de socket a 10.0.2.2:9001 y :9002>'
+TCP 10.0.2.2:9001 -> disponible
+TCP 10.0.2.2:9002 -> disponible

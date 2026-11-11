@@ -1,0 +1,22 @@
+# Datos sinteticos del experimento C: ~36 MB que experimento_c.py regenera
+# solo al arrancar. No tiene sentido versionarlos.
+experimento-c/datos/
+
+# Respaldos y salidas de prueba que crea ejecutar.bat
+evidencias_respaldo_*/
+evidencias_simulacion/
+
+# Auxiliares de LaTeX (el PDF entregable si se versiona)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+
+# Discos de las VMs de QEMU: cientos de MB, se reconstruyen con instalar_nodo.md
+*.qcow2
+*.iso

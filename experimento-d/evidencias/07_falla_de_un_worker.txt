@@ -1,0 +1,39 @@
+Evidencia 7 - Fase 7: prueba de falla de un worker
+Fecha: 2026-11-08 00:28:18 HSP
+
+-- 7.1 Antes de la falla: los dos workers responden
+Prueba de correctitud: contar primos en [2, 10] (esperado: 4)
+  local (sin red): 4 -> OK
+  un worker remoto: 4 -> OK
+  dos workers remotos: 4 -> OK
+
+-- 7.2 Se detiene el servicio worker de nodo2 (puerto reenviado 9002)
+$ ssh -p 2222 alumno@127.0.0.1 'pkill -f worker.py; ps -o pid,args | grep [w]orker.py || echo sin proceso worker'
+
+-- 7.3 Con nodo2 caido, se repite la bateria (tamanos 500000 y 10000000)
+$ time python3 src/coordinator.py bateria 500000,10000000 2
+tamano=500000: completado (T_A promedio=0.0028s)
+tamano=10000000: completado (T_A promedio=0.0682s)
+tamano=500000: resultado consistente entre escenarios completos (41538 primos)
+tamano=10000000: resultado consistente entre escenarios completos (664579 primos)
+
+CSV escrito en /home/alumno/experimento-d/src/../evidencias/resultados_d.csv
+matplotlib no disponible: no se genero grafico de la bateria D.
+real	0m 0.46s
+user	0m 0.17s
+sys	0m 0.05s
+
+-- 7.4 Filas del CSV de esa corrida: el escenario con dos workers queda incompleto
+tamano,escenario,resultado,completo,error
+500000,A_secuencial,41538,True,
+500000,A_secuencial,41538,True,
+500000,B_un_worker,41538,True,
+500000,B_un_worker,41538,True,
+500000,C_dos_workers,,False,"('10.0.2.2', 9002): conexion cerrada sin respuesta completa"
+500000,C_dos_workers,,False,"('10.0.2.2', 9002): error de conexion: [Errno 104] Connection reset by peer"
+10000000,A_secuencial,664579,True,
+10000000,A_secuencial,664579,True,
+10000000,B_un_worker,664579,True,
+10000000,B_un_worker,664579,True,
+10000000,C_dos_workers,,False,"('10.0.2.2', 9002): conexion cerrada sin respuesta completa"
+10000000,C_dos_workers,,False,"('10.0.2.2', 9002): error de conexion: [Errno 104] Connection reset by peer"

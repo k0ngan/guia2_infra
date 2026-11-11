@@ -1,0 +1,20 @@
+Evidencias 4 y 5 - Particion asignada a cada worker, resultados parciales y resultado final
+Ejecutado EN nodo0 (el coordinador), contra nodo1 y nodo2 por TCP/JSON
+Fecha: 2026-11-08 00:22:20 HSP
+
+$ ssh -p 2220 alumno@127.0.0.1 'cd experimento-d && python3 scripts/evidencia_particion.py 2 500000'
+Intervalo solicitado: [2, 500000]
+Workers configurados: [('10.0.2.2', 9001), ('10.0.2.2', 9002)]
+
+-- Particion estatica calculada por el coordinador
+   10.0.2.2:9001  ->  [2, 250001]  (250000 numeros)
+   10.0.2.2:9002  ->  [250002, 500000]  (249999 numeros)
+   suma de las particiones: 499999 numeros (intervalo completo: 499999) -> sin huecos ni solapamientos
+
+-- Resultados parciales, uno por worker
+   worker 'nodo1' en 10.0.2.2:9001  [2, 250001]  ->  22044 primos  (procesamiento: 0.0016 s)
+   worker 'nodo2' en 10.0.2.2:9002  [250002, 500000]  ->  19494 primos  (procesamiento: 0.0021 s)
+
+-- Resultado final agregado por el coordinador: 41538 primos
+-- Conteo secuencial en nodo0, para contrastar:  41538 primos
+-- Coinciden

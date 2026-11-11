@@ -1,0 +1,25 @@
+Evidencia 2 - Acceso SSH a los 3 nodos del cluster QEMU
+Anfitrion: Windows 11 | QEMU 11.1.0 con acelerador whpx | Alpine Linux 3.24
+Fecha: 2026-11-07 23:48:26 HSP
+
+$ ssh -p 2220 alumno@127.0.0.1 'hostname; whoami; uname -sr; python3 -V; ip -4 addr show eth0 | grep inet'
+nodo0
+alumno
+Linux 6.18.62-0-virt
+Python 3.14.10
+    inet 10.0.2.15/24 scope global eth0
+
+$ ssh -p 2221 alumno@127.0.0.1 'hostname; whoami; uname -sr; python3 -V; ip -4 addr show eth0 | grep inet'
+nodo1
+alumno
+Linux 6.18.62-0-virt
+Python 3.14.10
+    inet 10.0.2.15/24 scope global eth0
+
+$ ssh -p 2222 alumno@127.0.0.1 'hostname; whoami; uname -sr; python3 -V; ip -4 addr show eth0 | grep inet'
+nodo2
+alumno
+Linux 6.18.62-0-virt
+Python 3.14.10
+    inet 10.0.2.15/24 scope global eth0
+

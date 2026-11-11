@@ -1,0 +1,5 @@
+configuracion,npartitions,tiempo_s,n_filas_resultado
+pandas_puro,1,0.5690456000000004,64
+dask_4part,4,0.2725531000000001,64
+dask_8part,8,0.26754140000000026,64
+dask_16part,16,0.36352459999999986,64

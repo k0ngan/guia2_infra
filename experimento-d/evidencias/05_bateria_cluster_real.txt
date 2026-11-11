@@ -1,0 +1,18 @@
+Evidencia 6 - Bateria comparativa de los 3 escenarios sobre el cluster real
+Ejecutada EN nodo0. 5 tamanos x 3 escenarios x 3 repeticiones.
+Fecha: 2026-11-08 00:22:59 HSP
+
+$ python3 src/coordinator.py bateria 10000,100000,500000,2000000,10000000 3
+tamano=10000: completado (T_A promedio=0.0001s)
+tamano=100000: completado (T_A promedio=0.0006s)
+tamano=500000: completado (T_A promedio=0.0036s)
+tamano=2000000: completado (T_A promedio=0.0152s)
+tamano=10000000: completado (T_A promedio=0.0833s)
+tamano=10000: resultado consistente entre escenarios completos (1229 primos)
+tamano=100000: resultado consistente entre escenarios completos (9592 primos)
+tamano=500000: resultado consistente entre escenarios completos (41538 primos)
+tamano=2000000: resultado consistente entre escenarios completos (148933 primos)
+tamano=10000000: resultado consistente entre escenarios completos (664579 primos)
+
+CSV escrito en /home/alumno/experimento-d/src/../evidencias/resultados_d.csv
+matplotlib no disponible: no se genero grafico de la bateria D.

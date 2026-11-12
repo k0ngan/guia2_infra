@@ -69,30 +69,34 @@ falta nada.
 `coordinator.py simulacion` como `coordinator.py bateria` reescriben
 `experimento-d/evidencias/resultados_d.csv` y `comparacion_d.png`, que son la
 medicion sobre las VMs y una de las figuras del informe. Si se corre el
-coordinador a mano, hay que respaldar esos dos archivos primero. La escena 6
-de `presentar.bat` ya lo hace sola.
+coordinador a mano, hay que respaldar esos dos archivos primero. El paso 5 de
+`ejecutar.bat` ya lo hace solo.
 
-## Presentacion
+## Mostrar el trabajo
 
-`presentar.bat` es el guion para grabar el video: siete escenas en orden, cada
-una con su introduccion, lo que haya que ejecutar y la conclusion calculada
-desde las evidencias del momento (no con numeros escritos a mano, asi que
-nunca contradice lo que se acaba de ver en pantalla).
+`ejecutar.bat` es la demostracion, en seis pasos. Cada paso explica de que se
+trata, corre lo que tenga que correr y cierra con su conclusion; despues vuelve
+al menu, asi se controla el ritmo: se muestra un paso, se explica, y recien
+entonces se elige el siguiente.
 
 ```powershell
-.\presentar.bat        # menu de escenas
-.\presentar.bat g      # guiado: las 7 en orden, con pausa entre cada una
-.\presentar.bat 4      # solo la escena 4, para regrabarla
-.\presentar.bat p      # comprobacion previa, ANTES de empezar a grabar
+.\ejecutar.bat        # menu
+.\ejecutar.bat 4      # solo el paso 4
+.\ejecutar.bat p      # probar que todo este bien, antes de mostrar
 ```
 
-Las escenas son: portada y tesis, experimento A, experimento B, experimento C,
-experimento D sobre las evidencias del clúster, experimento D con el protocolo
-corriendo en vivo, y cierre. Entre escena y escena se detiene para poder cortar
-la grabacion.
+Los pasos son: de que se trata el trabajo, experimento A, experimento B,
+experimento C, experimento D (sus evidencias del clúster y el protocolo
+corriendo en vivo) y las conclusiones.
 
-El resumen de cada escena lo produce `presentacion/resumen_escena.py`, que
-tambien se puede llamar suelto:
+La opcion `p` revisa Python, las cinco dependencias, las siete evidencias que
+usan los pasos y el PDF del informe, y dice si falta algo antes de mostrarle el
+trabajo a alguien.
+
+Las conclusiones las calcula `presentacion/resumen_escena.py` leyendo el CSV de
+evidencias del momento, en vez de llevar numeros escritos a mano: si se vuelve a
+correr un experimento, el resumen se mueve con el y no queda contradiciendo lo
+que se acaba de ver en pantalla. Tambien se puede llamar suelto:
 
 ```powershell
 python presentacion/resumen_escena.py a       # a, b, c, d o cierre

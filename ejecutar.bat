@@ -1,57 +1,50 @@
 @echo off
 setlocal enabledelayedexpansion
 pushd "%~dp0"
-title Guia 2 - INFB6074 - Presentacion
+title Guia 2 - INFB6074 - Demostracion
 
 REM ---------------------------------------------------------------------------
-REM Guion de presentacion de la Guia 2, pensado para grabar el video.
+REM Demostracion de la Guia 2, en seis pasos.
 REM
-REM Siete escenas en orden. Cada una limpia la pantalla, anuncia de que se trata,
-REM corre lo que tenga que correr y cierra con la conclusion calculada desde las
-REM evidencias. Entre escena y escena se detiene, para poder cortar la grabacion.
+REM Cada paso limpia la pantalla, explica de que se trata, corre lo que tenga
+REM que correr y cierra con su conclusion, calculada desde las evidencias del
+REM momento. Al terminar vuelve al menu, asi se controla el ritmo: se muestra
+REM un paso, se explica, y recien despues se elige el siguiente.
 REM
-REM     presentar.bat        -> menu
-REM     presentar.bat g      -> guiado: las 7 escenas en orden
-REM     presentar.bat 4      -> solo la escena 4, para regrabarla
-REM     presentar.bat p      -> comprobacion previa (ANTES de grabar)
+REM     ejecutar.bat        -> menu
+REM     ejecutar.bat 4      -> solo el paso 4
+REM     ejecutar.bat p      -> prueba que todo este bien (antes de mostrar)
 REM
 REM Usa "python" y no "py": en este equipo "py" resuelve a 3.12, que no tiene
 REM las dependencias; "python" resuelve a 3.9.13, que si las tiene.
 REM ---------------------------------------------------------------------------
 
 set "PY=python"
-set "GUIADO="
 set "DIRECTO="
 set "VACIAS=0"
 
-if /i "%~1"=="g" (set "GUIADO=1" & goto escena1)
-if not "%~1"=="" (set "DIRECTO=1" & set "ESCENA=%~1" & goto despacho)
+if not "%~1"=="" (set "DIRECTO=1" & set "PASO=%~1" & goto despacho)
 
 :menu
 cls
 echo ===========================================================================
 echo   GUIA 2 - Paralelismo local y procesamiento distribuido
 echo   INFB6074 Infraestructura para Ciencia de Datos - UTEM 2026-2
-echo.
-echo   GUION DE PRESENTACION
 echo ===========================================================================
 echo.
-echo     G.  Grabar todo seguido: las 7 escenas en orden   (~4 min)
-echo.
-echo     1.  Portada y la tesis del trabajo                 (sin ejecutar)
+echo     1.  De que se trata el trabajo                     (sin ejecutar)
 echo     2.  Experimento A - vectorizar vs repartir             (~40 s)
 echo     3.  Experimento B - el GIL, hilos vs procesos          (~30 s)
 echo     4.  Experimento C - particionar con Dask               (~20 s)
-echo     5.  Experimento D - el cluster real, evidencias    (sin ejecutar)
-echo     6.  Experimento D - el protocolo corriendo             (~15 s)
-echo     7.  Cierre - las cuatro conclusiones               (sin ejecutar)
+echo     5.  Experimento D - el cluster distribuido             (~15 s)
+echo     6.  Conclusiones                                   (sin ejecutar)
 echo.
-echo     P.  Comprobacion previa (correr ANTES de grabar)
+echo     P.  Probar que todo este bien
 echo     0.  Salir
 echo.
-set "ESCENA="
-set /p "ESCENA=Escena: "
-if "%ESCENA%"=="" (
+set "PASO="
+set /p "PASO=Paso: "
+if "%PASO%"=="" (
     set /a VACIAS+=1
     if !VACIAS! GEQ 3 goto fin
     goto menu
@@ -59,59 +52,74 @@ if "%ESCENA%"=="" (
 set "VACIAS=0"
 
 :despacho
-if /i "%ESCENA%"=="g" (set "GUIADO=1" & set "DIRECTO=" & goto escena1)
-if /i "%ESCENA%"=="p" goto previa
-if "%ESCENA%"=="1" goto escena1
-if "%ESCENA%"=="2" goto escena2
-if "%ESCENA%"=="3" goto escena3
-if "%ESCENA%"=="4" goto escena4
-if "%ESCENA%"=="5" goto escena5
-if "%ESCENA%"=="6" goto escena6
-if "%ESCENA%"=="7" goto escena7
-if "%ESCENA%"=="0" goto fin
+if /i "%PASO%"=="p" goto prueba
+if "%PASO%"=="1" goto paso1
+if "%PASO%"=="2" goto paso2
+if "%PASO%"=="3" goto paso3
+if "%PASO%"=="4" goto paso4
+if "%PASO%"=="5" goto paso5
+if "%PASO%"=="6" goto paso6
+if "%PASO%"=="0" goto fin
 if defined DIRECTO (
-    echo Escena "%ESCENA%" no valida. Usa 1 a 7, G o P.
+    echo Paso "%PASO%" no valido. Usa 1 a 6, o P.
     popd & endlocal & exit /b 2
 )
 goto menu
 
 REM ===========================================================================
-REM  COMPROBACION PREVIA - no es una escena, es para antes de apretar grabar
+REM  P - Prueba previa. Correr ANTES de mostrarle el trabajo a alguien.
 REM ===========================================================================
-:previa
+:prueba
 cls
-echo === COMPROBACION PREVIA (antes de grabar) ===
+echo === PRUEBA: esta todo bien? ===
 echo.
 %PY% --version
 if errorlevel 1 (
-    echo ERROR: no se encontro "python" en el PATH. No grabes todavia.
+    echo.
+    echo ERROR: no se encontro "python" en el PATH.
+    echo Sin eso no corre ningun experimento.
     goto corte
 )
 echo.
+echo Dependencias:
+set "FALLA="
 for %%M in (numpy pandas matplotlib dask psutil) do (
     %PY% -c "import %%M" >nul 2>&1
-    if errorlevel 1 (echo    FALTA  %%M) else (echo    OK     %%M)
+    if errorlevel 1 (echo    FALTA  %%M & set "FALLA=1") else (echo    OK     %%M)
 )
 echo.
-set "LISTO=1"
-for %%P in (experimento-a\evidencias\resultados_a.csv experimento-b\evidencias\resultados_b.csv experimento-c\evidencias\resultados_c.csv experimento-d\evidencias\resultados_d.csv experimento-d\evidencias\01_tres_vms_simultaneas.png) do (
-    if exist "%%P" (echo    OK     %%P) else (echo    FALTA  %%P & set "LISTO=")
+echo Evidencias que usan los pasos:
+for %%P in (
+    experimento-a\evidencias\resultados_a.csv
+    experimento-b\evidencias\resultados_b.csv
+    experimento-c\evidencias\resultados_c.csv
+    experimento-d\evidencias\resultados_d.csv
+    experimento-d\evidencias\01_tres_vms_simultaneas.png
+    experimento-d\evidencias\04_particion_y_parciales.txt
+    experimento-d\evidencias\07_falla_de_un_worker.txt
+) do (
+    if exist "%%P" (echo    OK     %%P) else (echo    FALTA  %%P & set "FALLA=1")
 )
 echo.
-if defined LISTO (
-    echo Todo en su lugar. Puedes grabar.
+echo Informe:
+if exist informe_guia2.pdf (echo    OK     informe_guia2.pdf) else (echo    FALTA  informe_guia2.pdf & set "FALLA=1")
+echo.
+echo ---------------------------------------------------------------------------
+if defined FALLA (
+    echo   HAY ALGO QUE FALTA. Revisalo antes de mostrar el trabajo.
+    echo   Si faltan dependencias:  %PY% -m pip install -r requirements.txt
 ) else (
-    echo Falta evidencia. Revisa antes de grabar.
+    echo   TODO EN ORDEN. Los seis pasos van a funcionar.
+    echo.
+    echo   Antes de mostrar: pon esta ventana en pantalla completa y sube un
+    echo   poco la fuente de la consola. Las tablas estan armadas para 74
+    echo   columnas, asi no se cortan ni quedan chicas.
 )
-echo.
-echo Consejo de encuadre: deja esta ventana en pantalla completa y sube un poco
-echo el tamano de fuente de la consola. Las tablas estan pensadas para 74
-echo columnas, no se van a cortar.
+echo ---------------------------------------------------------------------------
 goto corte
 
 REM ===========================================================================
-:escena1
-set "ACTUAL=1"
+:paso1
 cls
 echo.
 echo   ===================================================================
@@ -140,11 +148,10 @@ echo.
 goto corte
 
 REM ===========================================================================
-:escena2
-set "ACTUAL=2"
+:paso2
 cls
 echo ===========================================================================
-echo   ESCENA 2 de 7 - EXPERIMENTO A - Vectorizar o repartir
+echo   PASO 2 de 6 - EXPERIMENTO A - Vectorizar o repartir
 echo ===========================================================================
 echo.
 echo   La misma transformacion numerica por tres caminos:
@@ -163,11 +170,10 @@ echo.
 goto corte
 
 REM ===========================================================================
-:escena3
-set "ACTUAL=3"
+:paso3
 cls
 echo ===========================================================================
-echo   ESCENA 3 de 7 - EXPERIMENTO B - El GIL, con y contra
+echo   PASO 3 de 6 - EXPERIMENTO B - El GIL, con y contra
 echo ===========================================================================
 echo.
 echo   Veinticuatro lotes de feature engineering, repartidos de tres formas:
@@ -185,11 +191,10 @@ echo.
 goto corte
 
 REM ===========================================================================
-:escena4
-set "ACTUAL=4"
+:paso4
 cls
 echo ===========================================================================
-echo   ESCENA 4 de 7 - EXPERIMENTO C - Cuanto particionar
+echo   PASO 4 de 6 - EXPERIMENTO C - Cuanto particionar
 echo ===========================================================================
 echo.
 echo   Dieciseis archivos CSV particionados por fecha, procesados con Dask en
@@ -206,58 +211,56 @@ echo.
 goto corte
 
 REM ===========================================================================
-:escena5
-set "ACTUAL=5"
+:paso5
 cls
 echo ===========================================================================
-echo   ESCENA 5 de 7 - EXPERIMENTO D - El cluster de verdad
+echo   PASO 5 de 6 - EXPERIMENTO D - El cluster distribuido
 echo ===========================================================================
 echo.
 echo   Tres maquinas virtuales Alpine Linux sobre QEMU: nodo0 coordina, nodo1
-echo   y nodo2 trabajan. Se comunican por TCP con mensajes JSON. Cuentan
-echo   numeros primos repartiendose el intervalo.
+echo   y nodo2 trabajan. Se comunican por TCP con mensajes JSON, una conexion
+echo   por solicitud. Cuentan numeros primos repartiendose el intervalo.
 echo.
-echo   Esto no se puede mostrar corriendo ahora -son tres VMs y varias
-echo   sesiones SSH a la vez-, asi que vamos a las evidencias capturadas el 7
-echo   y 8 de noviembre.
+echo   Este paso tiene dos partes:
+echo      1) Las evidencias del cluster real, capturado el 7 y 8 de noviembre.
+echo      2) El protocolo corriendo aqui y ahora, con workers locales.
 echo.
 echo   ---------------------------------------------------------------------
-echo   Evidencia 1: las tres VMs encendidas al mismo tiempo
+echo   PARTE 1 - Las tres VMs encendidas a la vez
 echo   ---------------------------------------------------------------------
-echo   (se abre la imagen; las consolas se pidieron a QEMU por QMP, no son
+echo   (se abre la imagen; las consolas se le pidieron a QEMU por QMP, no son
 echo    fotos de ventanas del escritorio)
 echo.
 if exist "experimento-d\evidencias\01_tres_vms_simultaneas.png" (
     start "" "experimento-d\evidencias\01_tres_vms_simultaneas.png"
 )
 if not defined DIRECTO pause
+
 cls
 echo   ---------------------------------------------------------------------
-echo   Evidencias 4 y 5: el reparto y los resultados parciales
+echo   El reparto del intervalo y los resultados parciales
 echo   ---------------------------------------------------------------------
 echo.
 type "experimento-d\evidencias\04_particion_y_parciales.txt"
 echo.
 if not defined DIRECTO pause
+
 cls
 echo   ---------------------------------------------------------------------
-echo   Evidencia 7: que pasa cuando un worker se cae
+echo   Que pasa cuando un worker se cae
 echo   ---------------------------------------------------------------------
 echo.
 type "experimento-d\evidencias\07_falla_de_un_worker.txt"
 echo.
 %PY% "presentacion\resumen_escena.py" d
-goto corte
+if not defined DIRECTO pause
 
-REM ===========================================================================
-:escena6
-set "ACTUAL=6"
 cls
-echo ===========================================================================
-echo   ESCENA 6 de 7 - EXPERIMENTO D - El protocolo, en vivo
-echo ===========================================================================
+echo   ---------------------------------------------------------------------
+echo   PARTE 2 - El protocolo, corriendo ahora
+echo   ---------------------------------------------------------------------
 echo.
-echo   Las VMs no estan encendidas, pero el protocolo es el mismo. Este modo
+echo   Las VMs no estan encendidas, pero el protocolo es el mismo. Esto
 echo   levanta dos workers como procesos locales y corre contra ellos todo lo
 echo   que corrio contra el cluster: la prueba de correctitud, el reparto sin
 echo   huecos, los timeouts y la agregacion.
@@ -266,13 +269,13 @@ echo   Lo unico que cambia es por donde viajan los mensajes.
 echo.
 if not defined DIRECTO pause
 
-REM --- Proteccion: la bateria sobrescribe la evidencia del cluster real ---
+REM --- La bateria sobrescribe la evidencia del cluster real: respaldar ---
 for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss"') do set "TS=%%i"
 set "RESP=experimento-d\evidencias_respaldo_!TS!"
 xcopy "experimento-d\evidencias" "!RESP!\" /E /I /Q /Y >nul
 
 cls
-echo   Corriendo la simulacion...
+echo   Corriendo la simulacion del protocolo...
 echo.
 %PY% "experimento-d\src\coordinator.py" simulacion
 
@@ -286,12 +289,11 @@ rmdir /S /Q "!RESP!" >nul 2>&1
 echo.
 echo   (La salida de esta simulacion quedo en evidencias_simulacion\. La
 echo    medicion del cluster real quedo intacta: este modo la sobrescribe,
-echo    asi que el guion la respalda y la restaura.)
+echo    asi que el paso la respalda y la restaura.)
 goto corte
 
 REM ===========================================================================
-:escena7
-set "ACTUAL=7"
+:paso6
 cls
 %PY% "presentacion\resumen_escena.py" cierre
 echo.
@@ -305,16 +307,6 @@ goto corte
 REM ===========================================================================
 :corte
 echo.
-if defined GUIADO (
-    echo ---------------------------------------------------------------------------
-    echo   Fin de la escena. Corta la grabacion si quieres, y pulsa una tecla.
-    echo ---------------------------------------------------------------------------
-    pause >nul
-    set /a SIG=!ACTUAL!+1
-    if !SIG! GTR 7 goto fin
-    set "ESCENA=!SIG!"
-    goto despacho
-)
 if defined DIRECTO goto fin
 echo ---------------------------------------------------------------------------
 pause
